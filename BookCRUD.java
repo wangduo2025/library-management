@@ -3,14 +3,7 @@ import java.sql.*;
 public class BookCRUD {
     public static void main(String[] args) {
         try {
-            // 1. 加载驱动
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            // 2. 建立连接
-            String url = "jdbc:mysql://localhost:3306/library?useSSL=false&serverTimezone=UTC";
-            String user = "root";
-            String password = "123456"; // 你的密码
-            Connection conn = DriverManager.getConnection(url, user, password);
+        	Connection conn = DBUtil.getConnection();
             
             // ===== 动作1：查（全表查询） =====
             System.out.println("--- 当前所有图书 ---");
