@@ -3,14 +3,14 @@ public class Book {
 	private String author;
 	private double price;
 
-	// ¹¹Ôì·½·¨
+	// æž„é€ æ–¹æ³•
 	public Book(String name, String author, double price) {
 		this.name = name;
 		this.author = author;
 		this.price = price;
 
 	}
-	// GetterºÍSetter·½·¨
+	// Getterå’ŒSetteræ–¹æ³•
 
 	public String getName() {
 		return name;
