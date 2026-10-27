@@ -44,7 +44,9 @@ public class BookGUI {
 		JTextField updateNameField = new JTextField(10);
 		JTextField updatePriceField = new JTextField(10);
 		JButton updateButton = new JButton("修改价格");
-
+		JButton borrowButton = new JButton("借书");
+		JButton returnButton = new JButton("还书");
+		
 		// 5. "添加"按钮的点击事件
 		addButton.addActionListener(new ActionListener() {
 			@Override
@@ -83,8 +85,9 @@ public class BookGUI {
 					PreparedStatement ps = conn.prepareStatement(sql);
 					ResultSet rs = ps.executeQuery();
 					while (rs.next()) {
+						String status = (rs.getInt("is_borrowed") == 1) ? "[已借出]" : "[在馆]";
 						textArea.append("ID:" + rs.getInt("id") + " 书名:" + rs.getString("name") + " 作者:"
-								+ rs.getString("author") + " 价格:" + rs.getDouble("price") + "\n");
+								+ rs.getString("author") + " 价格:" + rs.getDouble("price") + status + "\n");
 					}
 					rs.close();
 					ps.close();
@@ -165,7 +168,55 @@ public class BookGUI {
 			}
 		});
 
-		// 10. 把所有组件加到窗口上
+		// 10. "借书"按钮的点击事件
+			borrowButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+					String name = updateNameField.getText();
+					if (name == null || name.trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "请输入要借阅的书名!");
+						return;
+					}
+					try {
+					String sql = "UPDATE  books SET is_borrowed = 1 WHERE name LIKE ?";
+					PreparedStatement pS = conn.prepareStatement(sql);
+					pS.setString(1, "%" + name + "%");
+					int rows = pS.executeUpdate();
+					pS.close();
+					JOptionPane.showMessageDialog(frame, "成功借出" + rows + "本书!");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		
+		// 11. "还书"按钮的点击事件
+				
+				returnButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String name = updateNameField.getText();
+						if (name == null || name.trim().isEmpty()) {
+							JOptionPane.showMessageDialog(frame, "请输入要归还的书名!");
+							return;
+						}
+						try {
+							String sql = "UPDATE  books SET is_borrowed = 0 WHERE name LIKE ?";
+							PreparedStatement pS = conn.prepareStatement(sql);
+							pS.setString(1, "%" + name + "%");
+							int rows = pS.executeUpdate();
+							pS.close();
+							JOptionPane.showMessageDialog(frame, "成功归还" + rows + "本书!");
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				});
+		
+		
+		
+		
+		// 12. 把所有组件加到窗口上
 		// 分组1:添加图书
 		JPanel panel1 = new JPanel(new FlowLayout());
 		panel1.add(nameLabel);
@@ -185,7 +236,9 @@ public class BookGUI {
 		panel2.add(updateNameField);
 		panel2.add(updatePriceField);
 		panel2.add(updateButton);
-
+		panel2.add(borrowButton);
+		panel2.add(returnButton);
+		
 		// 分组3:显示结果
 		JPanel panel3 = new JPanel(new FlowLayout());
 		panel3.add(showButton);
@@ -195,7 +248,7 @@ public class BookGUI {
 		frame.add(panel2);
 		frame.add(panel3);
 
-		// 11. 显示窗口
+		// 13. 显示窗口
 		frame.setVisible(true);
 	}
 }
